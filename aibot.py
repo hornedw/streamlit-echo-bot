@@ -1,10 +1,18 @@
-
-import streamlit as st
+mport streamlit as st
 import random
 import time
-
 import requests
 import json
+
+def response_generator():
+    response = ai_ask("Pretend you are a very friendly and helpful person.  " +
+                      "Please provide a response given the provided context.  " +
+                      "Please provide the response only with no before or after commentary.",
+                      data=st.session_state.messages,
+                      api_key=st.secrets["apikey"])
+    for word in response.split():
+        yield word + " "
+        time.sleep(0.05)
 
 def ai_ask(prompt, data=None, temperature=0.5, max_tokens=250, model="mistral-small-latest", api_key=None, api_url="https://api.mistral.ai/v1/chat/completions"):
     if api_key is None or api_url is None:
@@ -51,19 +59,7 @@ def ai_ask(prompt, data=None, temperature=0.5, max_tokens=250, model="mistral-sm
         return f"Error: {str(e)}"
 
 
-
-
-# Streamed response emulator
-def response_generator():
-    response = ai_ask("Pretend you are a very friendly and helpful person.  Please provide a response given the provided context.  Please provide the response only with no before or after commentary.",
-                      data=st.session_state.messages,
-                      api_key=st.secrets["apikey"])
-    for word in response.split():
-        yield word + " "
-        time.sleep(0.05)
-
-
-st.title("AI chat")
+st.title("Simple chat")
 
 # Initialize chat history
 if "messages" not in st.session_state:
